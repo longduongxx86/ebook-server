@@ -4,9 +4,6 @@ import (
 	"fmt"
 	"main/internal/config"
 	"main/internal/models"
-	"strconv"
-	"strings"
-	"time"
 
 	"gorm.io/gorm"
 )
@@ -19,53 +16,6 @@ func NewBookRepository() *BookRepository {
 	return &BookRepository{
 		db: config.GetDB(),
 	}
-}
-
-// Helper functions
-func (r *BookRepository) slugify(s string) string {
-	s = strings.ToLower(strings.TrimSpace(s))
-	s = strings.ReplaceAll(s, " ", "-")
-	for strings.Contains(s, "--") {
-		s = strings.ReplaceAll(s, "--", "-")
-	}
-	out := make([]rune, 0, len(s))
-	for _, r := range s {
-		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') || r == '-' {
-			out = append(out, r)
-		}
-	}
-	res := string(out)
-	if res == "" {
-		res = strconv.FormatInt(time.Now().Unix(), 10)
-	}
-	return res
-}
-
-// parseInt64FromQuery tries to parse an int64 from query param
-func parseInt64FromQuery(s string) (int64, bool) {
-	if s == "" {
-		return 0, false
-	}
-	if v, err := strconv.ParseInt(s, 10, 64); err == nil {
-		return v, true
-	}
-	if f, err := strconv.ParseFloat(s, 64); err == nil {
-		return int64(f), true
-	}
-	return 0, false
-}
-
-func parseFloat64FromQuery(s string) (float64, bool) {
-	if s == "" {
-		return 0, false
-	}
-	if v, err := strconv.ParseFloat(s, 64); err == nil {
-		return v, true
-	}
-	if v, err := strconv.ParseInt(s, 10, 64); err == nil {
-		return float64(v), true
-	}
-	return 0, false
 }
 
 // FindByID finds book by ID with category preloaded
@@ -285,7 +235,6 @@ func (r *BookRepository) CountOrderItems(bookID uint) (int64, error) {
 	return count, err
 }
 
-
 // FindByIDWithPreload finds book by ID with category preloaded
 func (r *BookRepository) FindByIDWithPreload(id uint) (*models.Book, error) {
 	var book models.Book
@@ -311,13 +260,13 @@ func (r *BookRepository) UpdateStock(bookID uint, quantity int, isDecrement bool
 	if err := r.db.First(&book, bookID).Error; err != nil {
 		return err
 	}
-	
+
 	if isDecrement {
 		book.Stock -= quantity
 	} else {
 		book.Stock += quantity
 	}
-	
+
 	return r.db.Save(&book).Error
 }
 

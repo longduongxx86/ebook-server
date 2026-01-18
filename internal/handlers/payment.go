@@ -104,7 +104,18 @@ func (h *PaymentHandler) GetPayment(c *gin.Context) {
 		return
 	}
 
-	// Check if order belongs to user
+	// Allow managers/admins to access any order's payment
+	if role, ok := c.Get("user_role"); ok && (role == "manager" || role == "admin") {
+		payment, err := h.paymentRepo.FindByOrderID(uint(orderID))
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Payment not found"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"payment": payment})
+		return
+	}
+
+	// For regular users, check order ownership
 	if _, err := h.paymentRepo.CheckOrderExists(uint(orderID), userID.(uint)); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Order not found"})
 		return

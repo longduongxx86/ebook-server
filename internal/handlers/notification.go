@@ -21,7 +21,6 @@ func NewNotificationHandler() *NotificationHandler {
 	}
 }
 
-// Helper to create and broadcast notification (từ original)
 func createAndBroadcastNotification(title, message, typeStr string, referenceID uint) {
 	notification := models.Notification{
 		Title:       title,
@@ -31,15 +30,12 @@ func createAndBroadcastNotification(title, message, typeStr string, referenceID 
 		IsRead:      false,
 	}
 
-	// Save to DB
 	notificationRepo := repositories.NewNotificationRepository()
 	if err := notificationRepo.Create(&notification); err != nil {
-		// Log error but don't stop flow
 		return
 	}
 
-	// Broadcast via WebSocket
-	websocket.Manager.BroadcastNotification(title, message, typeStr, referenceID)
+	websocket.Manager.BroadcastNotification(notification)
 }
 
 // GetNotifications returns a list of notifications (từ original)

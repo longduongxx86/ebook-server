@@ -127,6 +127,12 @@ func (h *UserHandler) Login(c *gin.Context) {
 	})
 }
 
+func (h *UserHandler) Logout(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Logout successful",
+	})
+}
+
 // GetProfile gets user profile
 func (h *UserHandler) GetProfile(c *gin.Context) {
 	userID, exists := c.Get("user_id")

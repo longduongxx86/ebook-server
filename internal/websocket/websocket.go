@@ -3,10 +3,10 @@ package websocket
 import (
 	"encoding/json"
 	"log"
+	"main/internal/models"
 	"main/internal/utils"
 	"net/http"
 	"sync"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -67,17 +67,18 @@ func (manager *ClientManager) Start() {
 	}
 }
 
-func (manager *ClientManager) BroadcastNotification(title, message, typeStr string, referenceID uint) {
-	notification := map[string]interface{}{
-		"title":        title,
-		"message":      message,
-		"type":         typeStr,
-		"reference_id": referenceID,
-		"created_at":   time.Now().UnixMilli(),
-		"is_read":      false,
+func (manager *ClientManager) BroadcastNotification(notification models.Notification) {
+	data1 := map[string]interface{}{
+		"id":           notification.ID,
+		"title":        notification.Title,
+		"message":      notification.Message,
+		"type":         notification.Type,
+		"reference_id": notification.ReferenceID,
+		"created_at":   notification.CreatedAt,
+		"is_read":      notification.IsRead,
 	}
 
-	data, err := json.Marshal(notification)
+	data, err := json.Marshal(data1)
 	if err != nil {
 		log.Println("Error marshalling notification:", err)
 		return

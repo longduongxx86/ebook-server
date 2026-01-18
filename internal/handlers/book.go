@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 
 	"main/internal/models"
 	"main/internal/repositories"
@@ -166,11 +165,6 @@ func (h *BookHandler) CreateBook(c *gin.Context) {
 		return
 	}
 
-	// Generate slug if not provided
-	if input.Slug == "" {
-		input.Slug = slugify(input.Title)
-	}
-
 	if err := h.bookRepo.Create(&input); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create book"})
 		return
@@ -203,13 +197,6 @@ func (h *BookHandler) UpdateBook(c *gin.Context) {
 	delete(patch, "CreatedAt")
 	delete(patch, "deleted_at")
 	delete(patch, "DeletedAt")
-
-	// Generate slug if title is updated
-	if title, ok := patch["title"].(string); ok {
-		if _, hasSlug := patch["slug"]; !hasSlug {
-			patch["slug"] = slugify(title)
-		}
-	}
 
 	// Convert numeric fields
 	h.normalizePatchNumericFields(patch)
@@ -257,26 +244,6 @@ func (h *BookHandler) DeleteBook(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Book deleted"})
-}
-
-// Helper functions (moved from original handlers)
-func slugify(s string) string {
-	s = strings.ToLower(strings.TrimSpace(s))
-	s = strings.ReplaceAll(s, " ", "-")
-	for strings.Contains(s, "--") {
-		s = strings.ReplaceAll(s, "--", "-")
-	}
-	out := make([]rune, 0, len(s))
-	for _, r := range s {
-		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') || r == '-' {
-			out = append(out, r)
-		}
-	}
-	res := string(out)
-	if res == "" {
-		res = strconv.FormatInt(time.Now().Unix(), 10)
-	}
-	return res
 }
 
 func parseInt64FromQuery(s string) (int64, bool) {
