@@ -112,11 +112,7 @@ type Payment struct {
 	OrderID       uint           `json:"order_id" gorm:"not null;index"`
 	Order         Order          `json:"order" gorm:"foreignKey:OrderID"`
 	Amount        int64          `json:"amount" gorm:"not null"`
-	Method        string         `json:"method"`
 	Status        string         `json:"status" gorm:"default:'pending'"`
-	TransactionID string         `json:"transaction_id"`
-	QRCode        string         `json:"qr_code" gorm:"type:text"`
-	BankInfo      string         `json:"bank_info" gorm:"type:text"`
 }
 
 type Category struct {

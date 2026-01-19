@@ -65,9 +65,6 @@ func (r *PaymentRepository) UpdateStatus(id uint, status, transactionID string) 
 	}
 
 	payment.Status = status
-	if transactionID != "" {
-		payment.TransactionID = transactionID
-	}
 	payment.UpdatedAt = time.Now().UnixMilli()
 
 	if err := r.db.Save(&payment).Error; err != nil {

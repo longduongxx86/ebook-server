@@ -69,15 +69,10 @@ func (h *PaymentHandler) CreatePayment(c *gin.Context) {
 	payment := &models.Payment{
 		OrderID:   uint(orderID),
 		Amount:    int64(order.TotalAmount),
-		Method:    paymentData.Method,
 		Status:    "pending",
 	}
 
-	// Generate QR code and bank info for QR payment
-	if paymentData.Method == "qr" {
-		payment.QRCode = h.paymentRepo.GenerateQRCode(order.OrderNumber, int64(order.TotalAmount))
-		payment.BankInfo = h.paymentRepo.GenerateBankInfo()
-	}
+
 
 	if err := h.paymentRepo.Create(payment); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create payment"})
