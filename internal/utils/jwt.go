@@ -6,11 +6,10 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var jwtSecret = []byte("your-secret-key") // In production, use environment variable
+var jwtSecret = []byte("your-secret-key")
 
 const TokenDuration = 24 * time.Hour
 
-// GenerateJWT generates a JWT token for the user
 func GenerateJWT(userID uint, role string) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": userID,
@@ -23,7 +22,6 @@ func GenerateJWT(userID uint, role string) (string, error) {
 	return token.SignedString(jwtSecret)
 }
 
-// ValidateJWT validates a JWT token and returns the user ID and role
 func ValidateJWT(tokenString string) (uint, string, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return jwtSecret, nil

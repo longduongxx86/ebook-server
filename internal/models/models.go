@@ -63,6 +63,31 @@ type CartItem struct {
 	Cart      Cart           `json:"-" gorm:"foreignKey:CartID"`
 }
 
+type Conversation struct {
+	ID            uint           `json:"id" gorm:"primaryKey"`
+	CreatedAt     int64          `json:"created_at" gorm:"index"`
+	UpdatedAt     int64          `json:"updated_at" gorm:"index"`
+	DeletedAt     gorm.DeletedAt `json:"-" gorm:"index"`
+	UserID        uint           `json:"user_id" gorm:"uniqueIndex;not null"`
+	User          User           `json:"user" gorm:"foreignKey:UserID"`
+	LastMessage   string         `json:"last_message"`
+	LastMessageAt int64          `json:"last_message_at"`
+}
+
+type Message struct {
+	ID             uint           `json:"id" gorm:"primaryKey"`
+	CreatedAt      int64          `json:"created_at" gorm:"index"`
+	UpdatedAt      int64          `json:"updated_at" gorm:"index"`
+	DeletedAt      gorm.DeletedAt `json:"-" gorm:"index"`
+	ConversationID uint           `json:"conversation_id" gorm:"not null;index"`
+	Conversation   Conversation   `json:"-" gorm:"foreignKey:ConversationID"`
+	SenderID       uint           `json:"sender_id" gorm:"not null"`
+	Sender         User           `json:"sender" gorm:"foreignKey:SenderID"`
+	Content        string         `json:"content" gorm:"type:text;not null"`
+	IsRead         bool           `json:"is_read" gorm:"default:false"`
+	IsAdmin        bool           `json:"is_admin" gorm:"default:false"`
+}
+
 type Order struct {
 	ID              uint           `json:"id" gorm:"primaryKey"`
 	CreatedAt       int64          `json:"created_at" gorm:"index"`

@@ -20,6 +20,7 @@ func RegisterRoutes(r *gin.Engine) {
 	statisticsHandler := handlers.NewStatisticsHandler()
 	notificationHandler := handlers.NewNotificationHandler()
 	categoryHandler := handlers.NewCategoryHandler()
+	chatHandler := handlers.NewChatHandler()
 
 	public := r.Group("/api")
 	{
@@ -76,6 +77,9 @@ func RegisterRoutes(r *gin.Engine) {
 		protected.GET("/orders/:id/payment", paymentHandler.GetPayment)
 		protected.GET("/payments/my-payments", paymentHandler.GetUserPayments)
 
+		// Chat routes
+		protected.GET("/chat/history", chatHandler.GetChatHistory)
+
 		// Admin/Manager routes
 		admin := protected.Group("/admin")
 		admin.Use(middleware.RequireManager())
@@ -91,6 +95,9 @@ func RegisterRoutes(r *gin.Engine) {
 			// Payment management (admin only)
 			admin.GET("/payments", paymentHandler.GetAllPayments)
 			admin.PUT("/payments/:payment_id/status", paymentHandler.UpdatePaymentStatus)
+
+			// Chat management
+			admin.GET("/chat/conversations", chatHandler.GetConversations)
 		}
 
 		// Notification routes (Authenticated users)

@@ -35,6 +35,8 @@ func main() {
 		&models.Payment{},
 		&models.Category{},
 		&models.Notification{},
+		&models.Conversation{},
+		&models.Message{},
 	)
 
 	// Initialize MinIO (optional - will fail gracefully if not configured)
